@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+    <title>Hospital Management</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        :root{
+            --header-height: 3.5rem;
+            --white-color: hsl(210, 32%, 99%);
+            --text-color: hsl(210, 4%, 55%);
+            --dark-color-light: hsla(210, 4%, 4%, 0.1);
+            --white-color-light: hsla(210, 4%, 99%, 0.1);
+            --gradient-x: linear-gradient(90deg, hsla(0,0%,0%,0), hsl(210, 4%, 64%), hsla(0,0%,0%,0));
+            --gradient-y: linear-gradient(0, hsla(0,0%,0%,0), hsl(210, 4%, 64%), hsla(0,0%,0%,0));
+
+            --normal-font-size: 0.938rem;
+            --small-font-size: 0.813rem;
+
+            --font-medium: 500;
+            --font-semi-bold: 500;
+
+            --z-tooltip: 10;
+            --z-fixed: 100;
+        }
+
+        body{
+            font-size: var(--normal-font-size);
+            color: var(--text-color);
+            background: #1c1c1c;
+        }
+
+        a{
+            text-decoration: none;
+        }
+
+        img{
+            width: 100%;
+        }
+
+        .container{
+            margin-inline: 1.5rem;
+        }
+
+        .main{
+            padding-top: 5rem;
+        }
+
+        .header{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--dark-color-light);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: var(--z-fixed);
+        }
+
+        .header::after{
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-x);
+        }
+
+        .header__container{
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header__toggle{
+            font-size: 1.25rem;
+            color: var(--white-color);
+            cursor: pointer;
+        }
+
+        .header__logo{
+            color: #ddd;
+            font-size: 1rem;
+        }
+
+        .sidebar{
+            position: fixed;
+            left: -100%;
+            top: var(--header-height);
+            width: 280px;
+            height: 100%;
+            padding: 2rem 1.5rem;
+            background-color: var(--dark-color-light);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: var(--z-fixed);
+            transition: left 0.4s ease;
+        }
+
+        .sidebar::after{
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: var(--gradient-y);
+        }
+
+        .sidebar__container{
+            display: flex;
+            flex-direction: column;
+            row-gap: 2rem;
+            padding-bottom: 3rem;
+            height: 100%;
+        }
+
+        .sidebar__logo{
+            display: grid;
+            grid-template-columns: repeat(2, max-content);
+            column-gap: 0.5rem;
+        }
+
+        .sidebar__content{
+            position: relative;
+            /* overflow: auto; */
+            padding-top: 2rem;
+        }
+
+        .sidebar__content::-webkit-scrollbar{
+            display: none;
+        }
+
+        .sidebar__content::after{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-x);
+        }
+
+        .sidebar__list{
+            display: flex;
+            flex-direction: column;
+            row-gap: 0.25rem;
+        }
+
+        .sidebar__link-floating{
+            display: none;
+        }
+
+        .sidebar__link{
+            color: var(--text-color);
+            display: grid;
+            grid-template-columns: repeat(2, max-content);
+            align-items: center;
+            column-gap: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar__link i{
+            color: var(--white-color);
+            font-size: 1.25rem;
+        }
+
+        .sidebar__link-name{
+            font-weight: var(--font-medium);
+            transition: color 0.4s;
+        }
+
+        .sidebar__link:hover{
+            background-color: var(--white-color-light);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: var(--white-color);
+        }
+
+        .sidebar__title span{
+            display: block;
+            position: relative;
+            margin-block: 2rem 1.5rem;
+            text-align: center;
+            color: var(--white-color);
+            font-size: var(--normal-font-size);
+        }
+
+        .sidebar__title span::before, .sidebar__title::after{
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+        }
+
+        .sidebar__title span::before{
+            background: linear-gradient(90deg, hsla(0,0%,0%,0), hsl(210, 4%, 64%));
+            left: 0;
+        }
+
+        .sidebar__title span::after{
+            background: linear-gradient(90deg, hsl(210, 4%, 64%), hsla(0,0%,0%,0));
+            right: 0;
+        }
+
+        /* show sidebar */
+        .show-sidebar{
+            left: 0;
+        }
+
+        /* active link */
+        .active-link{
+            background-color: var(--white-color-light);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .active-link span{
+            color: var(--white-color);
+        }
+
+        /* form */
+        .form__container{
+            margin-top: 3rem;
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            background: #363636;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 3rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form__container header{
+            font-size: 1.5rem;
+            color: #ddd;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .form__container .form{
+            margin-top: 30px;
+        }
+
+        .form .input-box{
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .input-box label{
+            color: #eee;
+        }
+
+        .form .input-box input{
+            position: relative;
+            height: 50px;
+            width: 100%;
+            font-size: 1rem;
+            color: #ccc;
+            margin-top: 8px;
+            background: #363636;
+            outline: none;
+            border: 1px solid #757171;
+            border-radius: 6px;
+            padding: 0 15px;
+        }
+
+        textarea{
+            position: relative;
+            width: 100%;
+            font-size: 1rem;
+            color: #ccc;
+            margin-top: 8px;
+            background: #363636;
+            outline: none;
+            border: 1px solid #757171;
+            border-radius: 6px;
+            padding: 0 15px;
+            resize: none;
+        }
+
+        .form button{
+            height: 55px;
+            width: 100%;
+            background: #0985ea;
+            color: #fff;
+            outline: none;
+            border: none;
+            margin-top: 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .table{
+            width: 100%;
+        }
+
+        .table__section{
+            height: 650px;
+            overflow: auto;
+        }
+
+        .table__header p{
+            margin-bottom: 2rem;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 1.7rem;
+            text-align: center;
+        }
+
+        table{
+            width: 100%;
+            table-layout: fixed;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        thead th{
+            position: sticky;
+            top: 0;
+            background: #1c1c1c;
+            color: #eee;
+            font-size: 14.7px;
+        }
+
+        th, td{
+            border-bottom: 1px solid #dddddd;
+            padding: 10px 20px;
+            word-break: break-all;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        tr:hover td{
+            color: #ccc;
+            cursor: default;
+            background: #454242;
+        }
+
+        button{
+            outline: none;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            background: #830606;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        /* td button:nth-child(1){
+            background-color: #0985ea;
+        } */
+
+        td button:nth-child(2){
+            background-color: #830606;
+        }
+
+        @media screen and (min-width: 1024px) {
+            :root{
+                --normal-font-size: 1rem;
+                --small-font-size: 0.875rem;
+            }
+        }
+
+        /* small devices */
+        @media screen and (max-width: 300px) {
+            .sidebar{
+                width: 232px;
+                padding-inline: 1rem;
+            }
+
+            .sidebar__account{
+                flex-direction: column;
+                row-gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        /* large devices */
+        @media screen and (min-width: 1024px) {
+            .header__container{
+                height: calc(var(--header-height) + 2rem);
+            }
+
+            .header__toggle{
+                font-size: 1.5rem;
+            }
+
+            .sidebar{
+                left: 0;
+                width: 300px;
+                transition: width 0.4s ease;
+            }
+
+            .sidebar__container{
+                padding-bottom: 4rem;
+                overflow: hidden;
+            }
+
+            .sidebar__logo{
+                transition: padding 0.4s ease;
+            }
+
+            .sidebar__link{
+                position: relative;
+                padding-inline: 1.5rem;
+                column-gap: 2rem;
+            }
+
+            .sidebar__link i{
+                font-size: 1.5rem;
+            }
+
+            .sidebar__link-name{
+                transition: color 0.4s, opacity 0.4s;
+            }
+
+            .sidebar__title{
+                position: relative;
+            }
+
+            .sidebar__title::after{
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background: var(--gradient-x);
+                opacity: 0;
+            }
+
+            .sidebar__logo-text, .sidebar__title, .sidebar__title::after, .sidebar__title span{
+                transition: opacity 0.4s;
+            }
+
+            /* reduce sidebar */
+            .show-sidebar{
+                width: 120px;
+            }
+
+            .main{
+                padding-left: 300px;
+                padding-top: 6rem;
+                transition: padding 0.4s;
+            }
+
+            .show-sidebar .sidebar__logo{
+                padding-left: 1rem;
+            }
+
+            .show-sidebar .sidebar__logo-text, .show-sidebar .sidebar__link-name{
+                opacity: 0;
+            }
+
+            .sidebar__link-floating{
+                display: block;
+                font-size: 10px;
+                width: max-content;
+                margin: 0 auto;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 4px;
+                transition: color 0.4s ease opacity 0.4s;
+                opacity: 0;
+            }
+
+            .show-sidebar .sidebar__link:hover .sidebar__link-floating{
+                opacity: 1;
+                color: #ccc;
+            }
+
+            /* Add padding main */
+            .main-pd{
+                padding-left: 120px;
+            }
+        }
+
+        table::-webkit-scrollbar{
+            height: 5px;
+            width: 5px;
+        }
+
+        table::-webkit-scrollbar-track{
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        }
+
+        table::-webkit-scrollbar-thumb{
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header__container container">
+            <div class="header__toggle" id="header-toggle">
+                <i class="ri-menu-line"></i>
+            </div>
+            <a href="patient_dashboard.html" class="header__logo">
+                Patient Dashboard
+            </a>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <nav class="sidebar__container">
+            <div class="sidebar__content">
+                <div class="sidebar__list">
+                    <a href="patient_dashboard.html" class="sidebar__link">
+                        <i class="ri-article-line"></i>
+                        <span class="sidebar__link-name">Appointment form</span>
+                    </a>
+                    <a href="my_appointments.html" class="sidebar__link active-link">
+                        <i class="ri-survey-line"></i>
+                        <span class="sidebar__link-name">My Appointments</span>
+                    </a>
+                    <a href="patient_login.html" class="sidebar__link">
+                        <i class="ri-logout-circle-r-line"></i>
+                        <span class="sidebar__link-name">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <main class="main container" id="main">
+        <section>
+            <div class="table">
+                <div class="table__header">
+                    <p>My Appointments</p>
+                </div>
+                <div class="table__section">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Appointment Id</th>
+                                <th>Patient Name</th>
+                                <th>Doctor Name</th>
+                                <th>Date</th>
+                                <th>Confirmation</th>
+                                <th>Cancel Appointment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dilenka</td>
+                                <td>Sandeep</td>
+                                <td>04-07-2024</td>
+                                <td>not yet confirmed</td>
+                                <td>
+                                    <button>Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+<script>
+    const showSidebar = (toggleId, sidebarId, mainId) => {
+        const toggle = document.getElementById(toggleId), 
+              sidebar = document.getElementById(sidebarId),
+              main = document.getElementById(mainId)
+
+        if(toggle && sidebar && main){
+            toggle.addEventListener('click', () => {
+                // show sidebar
+                sidebar.classList.toggle('show-sidebar')
+                // Add Padding main
+                main.classList.toggle('main-pd')
+            })
+        }
+    }
+
+    showSidebar('header-toggle', 'sidebar', 'main');
+
+    const sidebarLink = document.querySelectorAll('.sidebar__link')
+
+    function linkColor(){
+        sidebarLink.forEach(l => l.classList.remove('active-link'))
+        this.classList.add('active-link')
+    }
+
+    sidebarLink.forEach(l => l.addEventListener('click', linkColor))
+</script>
+</html>
